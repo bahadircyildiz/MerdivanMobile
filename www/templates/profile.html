@@ -18,8 +18,6 @@
         <div map-lazy-load="https://maps.google.com/maps/api/js" style="width:100%;height:100%">
           <ng-map center="current-location"
                   zoom="16"
-                  max-zoom="20"
-                  min-zoom="12"
                   style="width:100%;height:100%"
                   on-click="vm.addMarker()">
             <custom-marker position="current-location">
@@ -32,12 +30,15 @@
                 <span class="marker"><i class="icon ion-flag target"></i></span>
               </div>
             </custom-marker>
-            <marker ng-repeat="obs in observations" position="[{{obs.Latitude}}, {{obs.Longitude}}]" on-click="goDetails(obs)"></marker>
+            <marker ng-repeat="obs in observations"
+                    position="[{{obs.Latitude}}, {{obs.Longitude}}]"
+                    on-click="goDetails(this)"></marker>
           </ng-map>
         </div>
 
     </ion-content>
-    <ion-footer-bar class="bar-dark">
-      <button ng-click="centerOnMe()" class="button icon button-icon ion-navigate">Find Me</button>
+    <ion-footer-bar class="bar bar-dark bar-icon-top">
+      <button ng-click="centerOnMe()" class="button icon button-icon ion-navigate"></button>
+      <button ng-click="centerOnMe()" class="button icon button-icon ion-android-locate"></button>
     </ion-footer-bar>
 </ion-view>

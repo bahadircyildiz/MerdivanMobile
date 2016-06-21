@@ -8,7 +8,7 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
     }
   }])
 
-.controller('AppCtrl', function($scope, $ionicModal, $ionicPopover, $timeout, $ionicSideMenuDelegate) {
+.controller('AppCtrl', function($log, $scope, $ionicModal, $ionicPopover, $timeout, $ionicSideMenuDelegate) {
     // Form data for the login modal
     $scope.isExpanded = false;
     $scope.hasHeaderFabLeft = false;
@@ -96,6 +96,7 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
 
     $scope.setChosenObs = function (obs){
       $scope.target = obs;
+      $log.debug($scope.target);
     }
 })
 
@@ -197,6 +198,11 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
     // Set Ink
     ionicMaterialInk.displayEffect();
 
+    //Set map
+    var map;
+    $scope.$on('mapInitialized', function(evt, evtMap) {
+      map = evtMap;
+    });
 
     //Marker Functions
     var vm = this;
@@ -224,8 +230,8 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
     }
 
     //Marker Details
-    $scope.goDetails = function(obs){
-      $scope.$parent.setChosenObs(obs);
+    $scope.goDetails = function(events, marker){
+      $scope.$parent.setChosenObs(marker.obs);
       $scope.$parent.setMenu(true);
     }
 
@@ -241,6 +247,7 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
         }
       );
 
+    //Creating Observation Click Control
     $scope.createObs = function(){
       if ($scope.target) $state.go("app.listView", {target: $scope.target})
       else $ionicPopup.alert({
@@ -280,8 +287,8 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
       var params = {};
       angular.extend(params, $scope.obs);
       params.CategoryId = $stateParams.category.CategoryId;
-      params.Latitude = $stateParams.target.Latitude;
-      params.Longitude = $stateParams.target.Longitude;
+      params.Latitude = parseFloat($stateParams.target.Latitude);
+      params.Longitude = parseFloat($stateParams.target.Longitude);
       API.request("Observation/Create", params)
         .then(
           function onSuccess(res){

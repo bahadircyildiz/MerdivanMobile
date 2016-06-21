@@ -4,7 +4,7 @@ angular.module("app.services",[])
     home: "http://merdivanweb.eu-gb.mybluemix.net",
     geocoding: "http://maps.googleapis.com/maps/api/geocode/json",
     request: function (endpoint, params) {
-      return $http({withCredentials: true, url:this.home+"/api/"+endpoint, data: params,
+      return $http({withCredentials: true, url:"/api/"+endpoint, data: params,
         headers:{'Content-Type': 'application/json; charset=utf-8'}, method: 'POST'});
     },
     mapReq: function(lat,lng){

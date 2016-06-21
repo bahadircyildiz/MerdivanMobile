@@ -10,14 +10,16 @@
             <a ng-click="createObs()" class="tab-item">
                 <i class="icon ion-arrow-graph-up-right"></i> Gozlem Olustur
             </a>
-            <a ui-sref="app.gallery" class="tab-item">
+            <!-- <a ui-sref="app.gallery" class="tab-item">
                 <i class="icon ion-images"></i> Etkinlikler
-            </a>
+            </a> -->
         </div>
 
         <div map-lazy-load="https://maps.google.com/maps/api/js" style="width:100%;height:100%">
           <ng-map center="current-location"
                   zoom="16"
+                  max-zoom="20"
+                  min-zoom="12"
                   style="width:100%;height:100%"
                   on-click="vm.addMarker()">
             <custom-marker position="current-location">
@@ -37,7 +39,7 @@
         </div>
 
     </ion-content>
-    <ion-footer-bar class="bar bar-dark bar-icon-top">
+    <ion-footer-bar class="bar bar-footer bar-dark">
       <button ng-click="centerOnMe()" class="button icon button-icon ion-navigate"></button>
       <button ng-click="centerOnMe()" class="button icon button-icon ion-android-locate"></button>
     </ion-footer-bar>

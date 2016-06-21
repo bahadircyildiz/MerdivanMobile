@@ -18,11 +18,17 @@
         </ion-header-bar>
         <ion-content class="stable-bg has-expanded-header" ng-if="target">
             <div class="row">
-              {{target.Description}}
+              <p>{{target.Description}}</p>
             </div>
             <div class="row">
-              <button class="button button-full button-balanced link">Go To Attachments {{target.Attachment.length}}</button>
+              <button class="button button-full button-balanced" ng-click="goAttachments(target)">Ekleri Görüntüle({{target.Attachment.length}})</button>
             </div>
+            <div class="row">
+                <div class="col"><button class="button icon-left ion-thumbsup button-positive"></button></div>
+                <div class="col"><center><h4>{{target.VoteCount}}</h4></center></div>
+                <div class="col"><button class="button icon-left ion-thumbsdown button-assertive"></button></div>
+            </div>
+
             <!-- <ion-list>
                 <ion-item nav-clear menu-close ui-sref="app.activity">
                     Activity

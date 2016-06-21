@@ -1,7 +1,34 @@
 {
-  "name": "HelloIonic",
-  "private": "true",
+  "name": "merdivan-mobile",
+  "private": true,
   "devDependencies": {
     "ionic": "driftyco/ionic-bower#1.3.0"
+  },
+  "resolutions": {
+    "angular": "1.5.6",
+    "angular-animate": "1.4.3",
+    "angular-sanitize": "1.4.3",
+    "angular-ui-router": "0.2.13",
+    "ionic": "1.3.0"
+  },
+  "authors": [
+    "Bahadir Can Yildiz <bahadircyildiz@yandex.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "www/lib",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-cookies": "^1.5.6",
+    "ion-md-input": "0.0.2",
+    "ionic-material": "*"
   }
 }

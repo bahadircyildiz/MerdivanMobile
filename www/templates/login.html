@@ -1,0 +1,18 @@
+<ion-view view-title="Giris" align-title="left">
+    <ion-content style="background: url(img/login.jpg) center; background-size: cover;">
+        <div class="hero no-header flat">
+            <div class="content">
+                <!--<div class="app-icon"></div>-->
+                <h1>Merdivan Mobil</h1>
+            </div>
+        </div>
+        <div class="list">
+            <ion-md-input placeholder="Kullanici Adi" ng-model="logindata.UserName" highlight-color="balanced" type="text"></ion-md-input>
+            <ion-md-input placeholder="Sifre" ng-model="logindata.Password" highlight-color="balanced" type="password"></ion-md-input>
+        </div>
+        <div class="padding">
+            <button ng-click="login()"  class="button button-full button-assertive ink">Giris</button>
+            <button ui-sref="app.register" class="button button-full button-assertive ink">Kayit Ol</button>
+        </div>
+    </ion-content>
+</ion-view>

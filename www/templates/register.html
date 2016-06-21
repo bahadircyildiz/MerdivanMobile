@@ -1,0 +1,18 @@
+<ion-view view-title="Kayit Ol" align-title="left">
+    <ion-content style="background: url(img/login.jpg) center; background-size: cover;">
+        <div class="hero no-header flat">
+            <div class="content">
+                <div class="app-icon"></div>
+                <h1>Merdivan Mobil Kayit</h1>
+            </div>
+        </div>
+        <div class="list">
+            <ion-md-input ng-model="regdata.UserName" placeholder="Kullanici Adi" highlight-color="balanced" type="text"></ion-md-input>
+            <ion-md-input ng-model="regdata.Password" placeholder="Sifre" highlight-color="balanced" type="password"></ion-md-input>
+            <ion-md-input ng-model="regdata.ConfirmPassword" placeholder="Sifre Onay" highlight-color="balanced" type="password"></ion-md-input>
+        </div>
+        <div class="padding">
+            <button on-tap="register()" class="button button-full button-assertive ink">Gönder</button>
+        </div>
+    </ion-content>
+</ion-view>

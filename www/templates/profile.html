@@ -1,0 +1,43 @@
+<ion-view view-title="Profil">
+    <ion-content ng-class="{expanded:$scope.isExpanded}">
+        <!-- <div class="hero slide-up" style="background-image: url('img/profile-bg.jpg');">
+            <div class="content">
+                <div class="avatar" style="background-image: url('img/daenerys.jpg');"></div>
+                <h3><a class="light">{{name}}</a></h3>
+            </div>
+        </div> -->
+        <div class="tabs tabs-dark tabs-icon-top static">
+            <a ng-click="createObs()" class="tab-item">
+                <i class="icon ion-arrow-graph-up-right"></i> Gozlem Olustur
+            </a>
+            <a ui-sref="app.gallery" class="tab-item">
+                <i class="icon ion-images"></i> Etkinlikler
+            </a>
+        </div>
+
+        <div map-lazy-load="https://maps.google.com/maps/api/js" style="width:100%;height:100%">
+          <ng-map center="current-location"
+                  zoom="16"
+                  max-zoom="20"
+                  min-zoom="12"
+                  style="width:100%;height:100%"
+                  on-click="vm.addMarker()">
+            <custom-marker position="current-location">
+              <div>
+                <span class="marker"><i class="icon ion-flag current"></i></span>
+              </div>
+            </custom-marker>
+            <custom-marker position="[{{target.Latitude}}, {{target.Longitude}}]" ng-if="target">
+              <div>
+                <span class="marker"><i class="icon ion-flag target"></i></span>
+              </div>
+            </custom-marker>
+            <marker ng-repeat="obs in observations" position="[{{obs.Latitude}}, {{obs.Longitude}}]" on-click="goDetails(obs)"></marker>
+          </ng-map>
+        </div>
+
+    </ion-content>
+    <ion-footer-bar class="bar-dark">
+      <button ng-click="centerOnMe()" class="button icon button-icon ion-navigate">Find Me</button>
+    </ion-footer-bar>
+</ion-view>

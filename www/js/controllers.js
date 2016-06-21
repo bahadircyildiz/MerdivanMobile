@@ -8,7 +8,7 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
     }
   }])
 
-.controller('AppCtrl', function($log, $scope, $ionicModal, $ionicPopover, $timeout, $ionicSideMenuDelegate) {
+.controller('AppCtrl', function($log, $scope, $state, $ionicModal, $ionicPopover, $timeout, $ionicSideMenuDelegate, API) {
     // Form data for the login modal
     $scope.isExpanded = false;
     $scope.hasHeaderFabLeft = false;
@@ -96,7 +96,20 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
 
     $scope.setChosenObs = function (obs){
       $scope.target = obs;
-      $log.debug($scope.target);
+      API.request("Vote/GetVoteCount", {ObservationId: obs.ObservationId})
+        .then(
+          function onSuccess(res){
+            $scope.target.VoteCount = res.data.Result.VoteCount;
+            $scope.setMenu(true);
+          },
+          function onError(res){
+            API.responseAlert(res);
+          }
+        )
+    }
+
+    $scope.goAttachments = function(target){
+      $state.go("app.gallery", {target: target})
     }
 })
 
@@ -232,11 +245,10 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
     //Marker Details
     $scope.goDetails = function(events, marker){
       $scope.$parent.setChosenObs(marker.obs);
-      $scope.$parent.setMenu(true);
     }
 
     //Get Observations
-    API.request("Observation/List", {PageNumber: $stateParams.PageNumber, PageSize: 20})
+    API.request("Observation/List", {PageNumber: $stateParams.PageNumber, PageSize: 50})
       .then(
         function onSuccess(res){
           $scope.observations = res.data.ObservationList;
@@ -265,7 +277,7 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
     //   );
 })
 
-.controller('CreateObsCtrl', function($scope, $log, $ionicPopup, $stateParams, $timeout, ionicMaterialMotion, ionicMaterialInk, $state, API) {
+.controller('CreateObsCtrl', function($scope, $log, $ionicPopup, $stateParams, $timeout, $q, ionicMaterialMotion, ionicMaterialInk, $state, API) {
   $scope.$parent.showHeader();
   $scope.$parent.setExpanded(false);
   $scope.$parent.setHeaderFab(false);
@@ -274,6 +286,7 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
   // $scope.hasHeaderFabRight = false;
 
     $scope.obs = {};
+    $scope.attachments = [];
     $timeout(function() {
         ionicMaterialMotion.fadeSlideIn({
             selector: '.animate-fade-slide-in .item'
@@ -282,6 +295,24 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
 
     // Activate ink for controller
     ionicMaterialInk.displayEffect();
+
+    //Image Upload Function
+    var promises = [];
+    var UploadImage = function(file, id, promises){
+      var d = $q.defer();
+      API.request("Image/Upload", {ImageFile: file, ObservationId: id})
+        .then(
+          function onSuccess(res){
+            d.resolve();
+          },
+          function onError(res){
+            d.reject(res);
+          }
+        );
+      promises.push(d.promise);
+    }
+
+
     $scope.send = function(){
       $log.debug($scope.obs);
       var params = {};
@@ -292,19 +323,14 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
       API.request("Observation/Create", params)
         .then(
           function onSuccess(res){
-            API.request("Image/Upload", {ImageFile: $scope.attachments, ObservationId: res.ObservationId})
-              .then(
-                function onSuccess2(res){
-                  $ionicPopup.alert({
-                    title:"Basarili", template:"Gozlem Kaydedildi",
-                  }).then(function(res){
-                    $state.go("app.profile");
-                  })
-                },
-                function onError2(res){
-                  API.responseAlert(res);
-                }
-              )
+            angular.forEach($scope.attachments, function(file, key){
+              UploadImage(file, res.data.ObservationId, promises);
+            })
+            $q.all(promises).then(function(){
+              $ionicPopup.alert({
+                title:"Basarili",template:"<center>Gozlem Kaydedildi.</center>"
+              }).then(function(res){$state.go("app.profile");});
+            })
           },
           function onError(res){
             API.responseAlert(res)
@@ -314,12 +340,12 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
 })
 
 .controller('ListViewCtrl', function($scope, $state, $log, $stateParams, $timeout, ionicMaterialInk, ionicMaterialMotion, API) {
-  $scope.$parent.showHeader();
-  $scope.$parent.setExpanded(false);
-  $scope.$parent.setHeaderFab(false);
-  $scope.isExpanded = false;
-  $scope.hasHeaderFabLeft = false;
-  $scope.hasHeaderFabRight = false;
+    $scope.$parent.showHeader();
+    $scope.$parent.setExpanded(false);
+    $scope.$parent.setHeaderFab(false);
+    $scope.isExpanded = false;
+    $scope.hasHeaderFabLeft = false;
+    $scope.hasHeaderFabRight = false;
 
     // Activate ink for controller
     ionicMaterialInk.displayEffect();
@@ -338,11 +364,55 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
 
     if($stateParams.target) $log.debug("target Var");
 
+    API.request("Categories/GetCategories", {})
+      .then(
+        function onSuccess(res){
+          API.categories = res.data.CategoryList;
+        },
+        function onError(res){
+          API.responseAlert(res);
+        }
+      )
+
     $scope.createObs = function(cat){
       $log.debug($stateParams.target);
       $state.go("app.createObs", {target: $stateParams.target, category: cat})
     }
 
+
+
+})
+
+.controller('GalleryCtrl', function($scope, $stateParams, $timeout, $log, ionicMaterialInk, ionicMaterialMotion, API) {
+    $scope.$parent.showHeader();
+    $scope.isExpanded = true;
+    $scope.$parent.setExpanded(false);
+    $scope.$parent.setHeaderFab(false);
+
+    // Activate ink for controller
+    ionicMaterialInk.displayEffect();
+
+    ionicMaterialMotion.pushDown({
+        selector: '.push-down'
+    });
+    ionicMaterialMotion.fadeSlideInRight({
+        selector: '.animate-fade-slide-in .item'
+    });
+    $log.debug($stateParams);
+
+    var files = $stateParams.target.Attachment;
+    angular.forEach(files, function(file, key){
+      var fileID = file.split(".")[0];
+      API.request("Image/Upload",{ObservationId: $stateParams.target.ObservationId, ImageFileId: fileID })
+        .then(
+          function onSuccess(res){
+            $log.debug(res);
+          },
+          function onError(res){
+            API.responseAlert(res);
+          }
+        )
+    })
 
 
 })
@@ -354,13 +424,13 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
         },
         link: function (scope, element, attributes) {
             element.bind("change", function (changeEvent) {
-                var reader = new FileReader();
-                reader.onload = function (loadEvent) {
-                    scope.$apply(function () {
-                        scope.fileread = loadEvent.target.result;
-                    });
-                };
-                reader.readAsDataURL(changeEvent.target.files[0]);
+                angular.forEach(changeEvent.target.files, function(file, key){
+                    var reader = new FileReader();
+                    reader.onload = function(event) {
+                      scope.fileread.push(event.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                });
             });
         }
     }

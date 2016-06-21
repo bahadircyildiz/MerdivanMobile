@@ -1,0 +1,22 @@
+<ion-view view-title="Profil">
+    <ion-content ng-class="{expanded:$scope.isExpanded}">
+        <div class="hero slide-up" style="background-image: url('img/profile-bg.jpg');">
+            <div class="content">
+                <!--<div class="avatar" style="background-image: url('img/daenerys.jpg');"></div>-->
+                <h3><a class="light">{{name}}</a></h3>
+            </div>
+        </div>
+        <div class="tabs tabs-dark tabs-icon-top static">
+            <a ui-sref="app.listView" class="tab-item">
+                <i class="icon ion-arrow-graph-up-right"></i> Gozlem Olustur
+            </a>
+            <a ui-sref="app.gallery" class="tab-item">
+                <i class="icon ion-images"></i> Etkinlikler
+            </a>
+        </div>
+        <div id="map" data-tap-disabled="true" style="width:100%;height:100%"></div>
+    </ion-content>
+    <ion-footer-bar class="bar-dark">
+      <a ng-click="centerOnMe()" class="button button-icon icon ion-navigate">Find Me</a>
+    </ion-footer-bar>
+</ion-view>

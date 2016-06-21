@@ -1,0 +1,31 @@
+<ion-view view-title="Kategori">
+    <ion-content ng-class="{expanded:isExpanded}">
+      <!-- <ul class="list">
+        <li class="item" ng-repeat="cat in categories" ui-sref="app.createObs({category: cat})">
+          {{cat}}
+        </li>
+      </ul> -->
+      <ion-list>
+        <ion-item ng-repeat="cat in categories" ng-click="createObs(cat)">
+          {{cat.Category}}
+        </ion-item>
+      </ion-list>
+    </ion-content>
+</ion-view>
+<!-- <ion-view view-title="Ekler" ng-if="attachments">
+    <ion-content ng-class="{expanded:isExpanded}">
+      <div class="list card">
+        <div class="item item-image" ng-repeat="att in attachments">
+         <img src="{{att}}" ng-click="ShowFullScreen(att)">
+        </div>
+      </div>
+      <div class="list condensed-space no-padding animate-blinds done done done done">
+          <div class="card dark-bg in" style="-webkit-transition: 0.13s; transition: 0.13s;" ng-repeat="space in spacesController.spaces" item="space" ui-sref="app.tabs.space({spaceId: space.id})">
+              <a class="item clear-bg item-bg-image waves-effect waves-button waves-light has-mask-reverse">
+                  <h2>{{space.attributes.name}}</h2>
+                  <img src="{{space.attributes.profilePhotoUrl}}" style="-webkit-transition: 0.06s; transition: 0.06s;">
+              </a>
+          </div>
+      </div>
+    </ion-content>
+</ion-view> -->

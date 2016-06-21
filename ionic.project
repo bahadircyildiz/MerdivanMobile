@@ -1,4 +1,10 @@
 {
   "name": "MerdivanMobile",
-  "app_id": ""
+  "app_id": "",
+  "proxies": [
+    {
+      "path": "/api/",
+      "proxyUrl": "http://merdivanwebservice.eu-gb.mybluemix.net/api/"
+    }
+  ]
 }

@@ -1,0 +1,20 @@
+<ion-view view-title="Gozlem Olustur">
+    <ion-content ng-class="{expanded:isExpanded}" class="animate-fade-slide-in">
+      <div class="list">
+        <label class="item item-input">
+          <input ng-model="obs.ObservationHeader" type="text" placeholder="Baslik">
+        </label>
+        <label class="item item-input">
+          <input fileread="attachments" id="pic" type="file" name="pic" accept="image/*">
+        </label>
+        <label class="item item-input">
+          <textarea ng-model="obs.Description" placeholder="Aciklama"></textarea>
+        </label>
+        <label class="item item-input">
+          <button ng-click="send()" class="button button-full button-positive">
+            Gonder
+          </button>
+        </label>
+      </div>
+    </ion-content>
+</ion-view>

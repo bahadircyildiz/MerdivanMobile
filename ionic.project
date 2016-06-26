@@ -6,5 +6,12 @@
       "path": "/api/",
       "proxyUrl": "http://merdivanweb.eu-gb.mybluemix.net/api/"
     }
+  ],
+  "browsers": [
+    {
+      "platform": "android",
+      "browser": "crosswalk",
+      "version": "12.41.296.5"
+    }
   ]
 }

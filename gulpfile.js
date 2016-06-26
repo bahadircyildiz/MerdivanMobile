@@ -37,6 +37,13 @@ gulp.task('install', ['git-check'], function() {
     });
 });
 
+gulp.task('templates', function(){
+  return gulp.src(paths.templates)
+    .pipe(angularTemplateCache())
+    .pipe(concat('templates.js'))
+    .pipe(gulp.dest('./www/lib/'));
+});
+
 gulp.task('git-check', function(done) {
   if (!sh.which('git')) {
     console.log(

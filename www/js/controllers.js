@@ -2,11 +2,12 @@
 'use strict';
 angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
 
-  .config(['$httpProvider', function($httpProvider){
-    $httpProvider.defaults.headers.post ={
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  }])
+.config(['$httpProvider', '$ionicConfigProvider' ,function($httpProvider, $ionicConfigProvider){
+  $httpProvider.defaults.headers.post ={
+    'Content-Type': 'application/json; charset=utf-8'
+  };
+  $ionicConfigProvider.scrolling.jsScrolling(false);
+}])
 
 .controller('AppCtrl', function($log, $scope, $state, $ionicModal, $ionicPopover, $timeout, $ionicSideMenuDelegate, API) {
     // Form data for the login modal
@@ -108,8 +109,21 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
         )
     }
 
-    $scope.goAttachments = function(target){
-      $state.go("app.gallery", {target: target})
+    $scope.goAttachments = function(){
+      $state.go("app.gallery", {target: $scope.target})
+    }
+
+    $scope.Vote = function(op){
+      API.request("Vote/"+op, {UserId: API.UserId, ObservationId: $scope.target.ObservationId})
+        .then(
+          function onSuccess(res){
+            if(op == "Add") $scope.target.VoteCount++;
+            else if (op == "Remove") $scope.target.VoteCount--;
+          },
+          function onError(res){
+            API.responseAlert(res);
+          }
+        )
     }
 })
 
@@ -128,9 +142,11 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
       .then(
         function onSuccess(res) {
           if (res.data.Footer.IsSuccess) {
+            $log.debug(res);
+            // API.UserId = res.data.UserId;
             $state.go("app.profile");
           }
-          else API.responseAlert(res)
+          else API.statusAlert(res)
         },
         function onError(res) {
           API.responseAlert(res)
@@ -156,33 +172,13 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
             if(res.data.Footer.IsSuccess){
               $state.go("app.login");
             }
-            else
-            API.responseAlert(res);
+            else API.statusAlert(res);
           },
           function onError(res){
             API.responseAlert(res);
           }
         );
     }
-})
-
-.controller('FriendsCtrl', function($scope, $stateParams, $timeout, ionicMaterialInk, ionicMaterialMotion) {
-    // Set Header
-    $scope.$parent.showHeader();
-    $scope.$parent.clearFabs();
-    $scope.$parent.setHeaderFab('left');
-
-    // Delay expansion
-    $timeout(function() {
-        $scope.isExpanded = true;
-        $scope.$parent.setExpanded(true);
-    }, 300);
-
-    // Set Motion
-    ionicMaterialMotion.fadeSlideInRight();
-
-    // Set Ink
-    ionicMaterialInk.displayEffect();
 })
 
 .controller('ProfileCtrl', function($scope, $log, $state, $stateParams, $timeout, $ionicLoading, $ionicPopup, ionicMaterialMotion, ionicMaterialInk, API) {
@@ -251,8 +247,11 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
     API.request("Observation/List", {PageNumber: $stateParams.PageNumber, PageSize: 50})
       .then(
         function onSuccess(res){
-          $scope.observations = res.data.ObservationList;
-          $log.debug($scope.observations);
+          if(res.data.Footer.IsSuccess){
+            $scope.observations = res.data.ObservationList;
+            $log.debug($scope.observations);
+          }
+          else API.statusAlert(res);
         },
         function onError(res){
           API.responseAlert(res);
@@ -277,7 +276,7 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
     //   );
 })
 
-.controller('CreateObsCtrl', function($scope, $log, $ionicPopup, $stateParams, $timeout, $q, ionicMaterialMotion, ionicMaterialInk, $state, API) {
+.controller('CreateObsCtrl', function($scope, $log, $ionicPopup, $ionicLoading, $stateParams, $timeout, $q, ionicMaterialMotion, ionicMaterialInk, $state, API) {
   $scope.$parent.showHeader();
   $scope.$parent.setExpanded(false);
   $scope.$parent.setHeaderFab(false);
@@ -303,7 +302,12 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
       API.request("Image/Upload", {ImageFile: file, ObservationId: id})
         .then(
           function onSuccess(res){
-            d.resolve();
+            if(res.data.Footer.IsSuccess){
+              d.resolve();
+            }
+            else {
+              d.reject(res);
+            }
           },
           function onError(res){
             d.reject(res);
@@ -312,9 +316,8 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
       promises.push(d.promise);
     }
 
-
     $scope.send = function(){
-      $log.debug($scope.obs);
+      $ionicLoading.show({template:"Gözlem Yükleniyor..."});
       var params = {};
       angular.extend(params, $scope.obs);
       params.CategoryId = $stateParams.category.CategoryId;
@@ -323,17 +326,30 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
       API.request("Observation/Create", params)
         .then(
           function onSuccess(res){
-            angular.forEach($scope.attachments, function(file, key){
-              UploadImage(file, res.data.ObservationId, promises);
-            })
-            $q.all(promises).then(function(){
-              $ionicPopup.alert({
-                title:"Basarili",template:"<center>Gozlem Kaydedildi.</center>"
-              }).then(function(res){$state.go("app.profile");});
-            })
+            if(res.data.Footer.IsSuccess){
+              angular.forEach($scope.attachments, function(file, key){
+                UploadImage(file, res.data.ObservationId, promises);
+              })
+              $q.all(promises).then(function(results){
+                var failIndex = sift.indexOf({success: false},results);
+                if(failIndex>=0){
+                  $ionicLoading.hide();
+                  $ionicPopup.alert({
+                    title:"Basarisiz",template: JSON.stringify(results[failIndex])
+                  });
+                }
+                else{
+                  $ionicLoading.hide();
+                  $ionicPopup.alert({
+                    title:"Basarili",template:"<center>Gozlem Kaydedildi.</center>"
+                  }).then(function(res){$state.go("app.profile");});
+                }
+              })
+            }
+            else API.statusAlert(res);
           },
           function onError(res){
-            API.responseAlert(res)
+            API.responseAlert(res);
           }
         )
     }
@@ -367,7 +383,10 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
     API.request("Categories/GetCategories", {})
       .then(
         function onSuccess(res){
-          API.categories = res.data.CategoryList;
+          if(res.data.Footer.IsSuccess){
+            API.categories = res.data.CategoryList;
+          }
+          else API.statusAlert(res);
         },
         function onError(res){
           API.responseAlert(res);
@@ -383,9 +402,8 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
 
 })
 
-.controller('GalleryCtrl', function($scope, $stateParams, $timeout, $log, ionicMaterialInk, ionicMaterialMotion, API) {
+.controller('GalleryCtrl', function($scope, $q, $stateParams, $timeout, $log, $ionicLoading, ionicMaterialInk, ionicMaterialMotion, API) {
     $scope.$parent.showHeader();
-    $scope.isExpanded = true;
     $scope.$parent.setExpanded(false);
     $scope.$parent.setHeaderFab(false);
 
@@ -398,22 +416,25 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
     ionicMaterialMotion.fadeSlideInRight({
         selector: '.animate-fade-slide-in .item'
     });
-    $log.debug($stateParams);
 
+    // $ionicLoading.show({template:"Yukleniyor..."});
+    $scope.pics = [];
     var files = $stateParams.target.Attachment;
     angular.forEach(files, function(file, key){
       var fileID = file.split(".")[0];
-      API.request("Image/Upload",{ObservationId: $stateParams.target.ObservationId, ImageFileId: fileID })
+      API.request("Image/Download",{ObservationId: $stateParams.target.ObservationId})
         .then(
           function onSuccess(res){
-            $log.debug(res);
+            if(res.data.Footer.IsSuccess){
+
+            }
+            else API.statusAlert(res);
           },
           function onError(res){
             API.responseAlert(res);
           }
         )
-    })
-
+    });
 
 })
 

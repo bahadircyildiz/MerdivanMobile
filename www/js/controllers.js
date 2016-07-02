@@ -9,7 +9,7 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
   $ionicConfigProvider.scrolling.jsScrolling(false);
 }])
 
-.controller('AppCtrl', function($log, $scope, $state, $ionicModal, $ionicPopover, $timeout, $ionicSideMenuDelegate, API) {
+.controller('AppCtrl', function($log, $scope, $state, $ionicModal, $ionicPopup, $timeout, $ionicSideMenuDelegate, API) {
     // Form data for the login modal
     $scope.isExpanded = false;
     $scope.hasHeaderFabLeft = false;
@@ -110,20 +110,30 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
     }
 
     $scope.goAttachments = function(){
+      $scope.setMenu(false);
       $state.go("app.gallery", {target: $scope.target})
     }
 
     $scope.Vote = function(op){
-      API.request("Vote/"+op, {UserId: API.UserId, ObservationId: $scope.target.ObservationId})
-        .then(
-          function onSuccess(res){
-            if(op == "Add") $scope.target.VoteCount++;
-            else if (op == "Remove") $scope.target.VoteCount--;
-          },
-          function onError(res){
-            API.responseAlert(res);
-          }
-        )
+      $log.debug(typeof op);
+      if(op == "Add" || op == "Remove")
+        API.request("Vote/"+op, {ObservationId: $scope.target.ObservationId})
+          .then(
+            function onSuccess(res){
+              $log.debug(res);
+              if(res.data.Result.Footer.IsSuccess){
+                $scope.target.VoteCount = res.data.Result.VoteCount;
+                $scope.target.Style = op;
+              }
+              else API.statusAlert(res);
+            },
+            function onError(res){
+              API.responseAlert(res);
+            }
+          )
+      else $ionicPopup.alert({
+        title:"Wow!", template:"<center>Nice Trick Pal.</center>"
+      })
     }
 })
 
@@ -417,26 +427,43 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
         selector: '.animate-fade-slide-in .item'
     });
 
-    // $ionicLoading.show({template:"Yukleniyor..."});
+    $ionicLoading.show({template:"Yukleniyor..."});
     $scope.pics = [];
-    var files = $stateParams.target.Attachment;
-    angular.forEach(files, function(file, key){
-      var fileID = file.split(".")[0];
-      API.request("Image/Download",{ObservationId: $stateParams.target.ObservationId})
-        .then(
-          function onSuccess(res){
-            if(res.data.Footer.IsSuccess){
-
-            }
-            else API.statusAlert(res);
-          },
-          function onError(res){
-            API.responseAlert(res);
+    // var files = $stateParams.target.Attachment;
+    // angular.forEach(files, function(file, key){
+    //   var fileID = file.split(".")[0];
+    //   API.request("Image/Download",{ObservationId: $stateParams.target.ObservationId})
+    //     .then(
+    //       function onSuccess(res){
+    //         if(res.data.Footer.IsSuccess){
+    //
+    //         }
+    //         else API.statusAlert(res);
+    //       },
+    //       function onError(res){
+    //         API.responseAlert(res);
+    //       }
+    //     )
+    // });
+    API.request("Image/Download",{ObservationId: $stateParams.target.ObservationId})
+      .then(
+        function onSuccess(res){
+          if(res.data.Footer.IsSuccess){
+            $scope.pics = res.data.ImageFile;
+            $log.debug($scope.pics);
+            $ionicLoading.hide();
           }
-        )
-    });
-
-})
+          else {
+            $ionicLoading.hide();
+            API.statusAlert(res);
+          }
+        },
+        function onError(res){
+          $ionicLoading.hide();
+          API.responseAlert(res);
+        }
+      );
+    })
 
 .directive("fileread", [function () {
     return {

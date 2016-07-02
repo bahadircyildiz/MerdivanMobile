@@ -88,3 +88,15 @@ p {
 .marker{
   font-size: 30px;
 }
+
+#Vote{
+  font-size: 20px;
+}
+
+.Add{
+  color: green;
+}
+
+.Remove{
+  color: red;
+}

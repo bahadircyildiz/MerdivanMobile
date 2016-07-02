@@ -4,7 +4,7 @@
             <div class="card card-gallery item item-text-wrap" ng-repeat="pic in pics" ng-if="$index%2==0">
                 <div class="ink dark-bg">
                     <h2>Resim {{$index+1}}</h2>
-                    <img class="full-image" src="{{pic}}">
+                    <img class="full-image" data-ng-src="data:image/png;charset=utf-8;base64,{{pic}}">
                 </div>
                 <div class="item tabs tabs-secondary tabs-icon-left">
                 </div>
@@ -14,7 +14,7 @@
             <div class="card card-gallery item item-text-wrap" ng-repeat="pic in pics" ng-if="$index%2==1">
                 <div class="ink dark-bg">
                     <h2>Resim {{$index+1}}</h2>
-                    <img class="full-image" src="{{pic}}">
+                    <img class="full-image" data-ng-src="data:image/png;charset=utf-8;base64,{{pic}}">
                 </div>
                 <div class="item tabs tabs-secondary tabs-icon-left">
                 </div>

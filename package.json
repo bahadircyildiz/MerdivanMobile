@@ -17,15 +17,25 @@
     "shelljs": "^0.3.0"
   },
   "cordovaPlugins": [
-    "cordova-plugin-device",
-    "cordova-plugin-console",
+    {
+      "locator": "https://github.com/keensoft/FullScreenImage-Cordova-Plugin.git",
+      "id": "es.keensoft.fullscreenimage"
+    },
     "cordova-plugin-whitelist",
-    "cordova-plugin-splashscreen",
-    "cordova-plugin-statusbar",
-    "ionic-plugin-keyboard"
+    {
+      "locator": "https://github.com/phonegap-googlemaps-plugin/cordova-plugin-googlemaps",
+      "id": "cordova-plugin-googlemaps"
+    },
+    "cordova-plugin-crosswalk-webview",
+    "cordova-plugin-splashscreen"
   ],
   "cordovaPlatforms": [
-    "android"
+    "android",
+    {
+      "platform": "android",
+      "version": "",
+      "locator": "android"
+    }
   ],
   "main": "gulpfile.js",
   "scripts": {

@@ -1,17 +1,67 @@
-This README.md file is displayed on your project page. You should edit this 
-file to describe your project, including instructions for building and 
-running the project, pointers to the license under which you are making the 
-project available, and anything else you think would be useful for others to
-know.
+# Merdivan Mobile Front End Source Code
 
-We have created an empty license.txt file for you. Well, actually, it says,
-"<Replace this text with the license you've chosen for your project.>" We 
-recommend you edit this and include text for license terms under which you're
-making your code available. A good resource for open source licenses is the 
-[Open Source Initiative](http://opensource.org/).
+## Installation
 
-Be sure to update your project's profile with a short description and 
-eye-catching graphic.
+ * Clone Project,
+ * Install [Nodejs](https://nodejs.org/en/),
+ * Open Command Line or Terminal to Install [Bower](https://bower.io/), [Cordova](https://cordova.apache.org/) & [Ionic Framework](http://ionicframework.com/) with npm globally, 
+ ```
+ 	npm install -g bower cordova ionic
+ ```
+ 
+ * Enter the project directory and install required libraries using npm & bower,
+ ```
+ 	cd /path/to/project
+    npm install
+    bower install
+ ```
+ 
+ * Restore the Ionic state defined within project with command below,
+ ```
+ 	ionic state restore
+ ```
 
-Finally, consider defining some sprints and work items in Track & Plan to give 
-interested developers a sense of your cadence and upcoming enhancements.
+ * Add android platform to the project. If added before, skip this part,
+ ```
+ 	ionic platform add android
+ ```
+ 
+## Dev-Env Configurations
+
+ Depended on where this project will be, there will be some configurations to make. 
+ 
+For serving project on browser & debugging on live reload,
+ * Open ```/path/to/project/www/js/services.js``` & change Line 7 with 
+ ```
+ 	return $http({withCredentials: true, url:"/api/"+endpoint, data: params,
+ ```
+ * Open Terminal
+ ```
+ 	cd /path/to/project
+ 	ionic serve
+ ```
+ 
+ * Every change made below ```./www/``` will refresh the browser for live reload.
+ 
+For deploying the project a, 
+ * Open ```/path/to/project/www/js/services.js``` & change Line 7 with 
+ ```
+ 	return $http({withCredentials: true, url: this.home + "/api/" + endpoint, data: params,
+ ```
+ 
+ * Open Terminal
+ * For building the .app
+ ```
+ 	ionic build android
+ ```
+ 
+Output file path will be shown on Terminal.
+ 
+ * For running the project on Android Device
+ ```
+ 	ionic run android
+ ``` 
+ 
+ * Check device for fingerprint verifications. Track Terminal for further informations-
+ 
+ Note: First steps are crucial for connecting databases. Orherwise, there would be connection problems.

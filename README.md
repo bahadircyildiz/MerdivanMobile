@@ -11,7 +11,7 @@
  
  * Enter the project directory and install required libraries using npm & bower,
  ```
- 	cd /path/to/project
+	cd /path/to/project
     npm install
     bower install
  ```
@@ -43,7 +43,7 @@ For serving project on browser & debugging on live reload,
  
  * Every change made below ```./www/``` will refresh the browser for live reload.
  
-For deploying the project a, 
+For deploying the project to an android device, 
  * Open ```/path/to/project/www/js/services.js``` & change Line 7 with 
  ```
  	return $http({withCredentials: true, url: this.home + "/api/" + endpoint, data: params,

@@ -29,6 +29,7 @@
   "dependencies": {
     "angular-cookies": "^1.5.6",
     "ion-md-input": "0.0.2",
-    "ionic-material": "*"
+    "ionic-material": "*",
+    "ngmap": "^1.17.3"
   }
 }

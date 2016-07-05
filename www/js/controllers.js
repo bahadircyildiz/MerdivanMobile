@@ -449,8 +449,11 @@ angular.module('starter.controllers', ['ngCookies','app.services','ngMap'])
       .then(
         function onSuccess(res){
           if(res.data.Footer.IsSuccess){
-            $scope.pics = res.data.ImageFile;
-            $log.debug($scope.pics);
+            var pics = res.data.ImageFile;
+            angular.forEach(pics, function(pic, index){
+              var target = document.querySelector('#pic'+(index+1));
+              target.src = pic;
+            })
             $ionicLoading.hide();
           }
           else {
